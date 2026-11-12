@@ -1,0 +1,39 @@
+---
+- name: Practica 2do Parcial Ansible
+  hosts: docker
+
+  tasks:
+    - name: Mostrar el nombre del host
+      ansible.builtin.debug:
+        msg: "Nombre del host: {{ ansible_hostname }}"
+
+    - name: Mostrar el sistema operativo
+      ansible.builtin.debug:
+        msg: "Sistema operativo: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Crear el directorio /tmp/ansible-demo
+      ansible.builtin.file:
+        path: /tmp/ansible-demo
+        state: directory
+
+    - name: Crear info.txt con el nombre del servidor y el sistema operativo
+      ansible.builtin.copy:
+        dest: /tmp/ansible-demo/info.txt
+        content: |
+          Servidor: {{ ansible_hostname }}
+          Sistema operativo: {{ ansible_distribution }} {{ ansible_distribution_version }}
+
+    - name: Crear directorios logs, backup y config con loop
+      ansible.builtin.file:
+        path: "/tmp/ansible-demo/{{ item }}"
+        state: directory
+      loop:
+        - logs
+        - backup
+        - config
+
+    - name: Mensaje solo si el sistema operativo es Ubuntu
+      ansible.builtin.debug:
+        msg: "Este servidor usa Ubuntu"
+      when: ansible_distribution == "Ubuntu"
+
